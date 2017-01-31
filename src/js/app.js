@@ -23,15 +23,37 @@
                         });
                         container.empty();
                         container.append(albumsList);
-                        progress.animate({width: "0%"}, .1);
+                        preloadReset();
                     }, function () {
 
                     }, function (counter, length) {
-                        progress.stop().animate({
-                            width: (counter / length * 100) + "%"
-                        }, 300);
+                        preloadStart(counter, length);
                     })
             });
+        }
+
+        function preloadStart (counter, length) {
+            let tl = new TimelineLite();
+            tl.to(progress, 0, {
+                height:  "2px",
+                backgroundColor: "#ffd700",
+                opacity: 1
+            });
+            tl.to(progress, .2, {
+                width:   (counter / length * 100) + "%",
+            })
+        }
+
+        function preloadReset () {
+            let tl = new TimelineLite();
+            tl.to(progress, 0, {
+                height: 0,
+                opacity: 0,
+                delay: .5
+            });
+            tl.to(progress, 0, {
+                width: "0%"
+            })
         }
 
         function preloadImg (urls) {
