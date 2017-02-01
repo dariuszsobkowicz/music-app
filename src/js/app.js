@@ -1,6 +1,13 @@
 (function ($) {
 
+
+
     $(function () {
+
+        $("body").cookieAlert({
+            message: "This site uses cookies to personalize content and ads to make our site easier for you to use."
+        });
+
         let query     = "batman",
             container = $("#main"),
             progress  = $("#preload-progress"),
