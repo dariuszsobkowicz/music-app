@@ -6,16 +6,18 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="Single Page App">
     <title>Music App</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway+Dots" rel="stylesheet">
     <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 
-<nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
+<nav class="navbar fixed-top navbar-toggleable-md navbar-inverse bg-inverse">
     <div class="container">
         <a class="navbar-brand" href="#">Music App</a>
         <ul class="nav">
             <li class="nav-item"><a class="nav-link" href="#">Jazz</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Rock</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Playlists(10)</a></li>
         </ul>
         <form id="search-form" class="form-inline ml-auto mr-0">
             <input class="form-control mr-2" type="text" name="search" placeholder="Title">
@@ -24,13 +26,14 @@
     </div>
 </nav>
 
-<div class="container-fluid" style="overflow: scroll">
-    <div class="row">
-        <div id="main" class="col-12 card-group" style="padding: 0">
-
-        </div>
-    </div>
+<div class="hero">
+    <h1>Listen music everywhere</h1>
 </div>
+
+<div id="main" class="albums-container"></div>
+
+
+
 
 <div class="container-fluid fixed-bottom">
     <div class="row">

@@ -4,9 +4,9 @@
 
     $(function () {
 
-        $("body").cookieAlert({
-            message: "This site uses cookies to personalize content and ads to make our site easier for you to use."
-        });
+        //$("body").cookieAlert({
+        //    message: "This site uses cookies to personalize content and ads to make our site easier for you to use."
+        //});
 
         let query     = "batman",
             container = $("#main"),
@@ -84,11 +84,11 @@
         }
 
         function createTemplate (album) {
-            return `<div class="card card-inverse card-img-shadow" style="flex-basis: 400px;">
-                        <img class="card-img-top img-fluid" src="${album.images[0].url}" alt="Sample album">
-                        <div class="card-img-overlay card-img-text-bottom">
-                        <h4 class="card-title">${album.name}</h4>
-                        <p class="card-text">${album.artists[0].name}</p>
+            return `<div class="album-card">
+                        <img class="album-img" src="${album.images[0].url}" alt="Sample album">
+                        <div class="album-details">
+                        <h4 class="">${album.name}</h4>
+                        <p class="">${album.artists[0].name}</p>
                         </div>
                     </div>`;
         }

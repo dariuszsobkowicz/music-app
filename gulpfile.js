@@ -1,15 +1,20 @@
-const gulp        = require("gulp"),
-      sass        = require("gulp-sass"),
-      plumber     = require("gulp-plumber"),
-      babel       = require("gulp-babel"),
-      del         = require("del"),
-      runSequence = require("run-sequence"),
-      browserSync = require("browser-sync");
+const gulp         = require("gulp"),
+      sass         = require("gulp-sass"),
+      plumber      = require("gulp-plumber"),
+      babel        = require("gulp-babel"),
+      del          = require("del"),
+      runSequence  = require("run-sequence"),
+      postcss      = require("gulp-postcss"),
+      precss       = require("precss"),
+      autoprefixer = require("gulp-autoprefixer"),
+      browserSync  = require("browser-sync");
 
 gulp.task("css", function () {
+
     return gulp.src("src/scss/app.scss")
         .pipe(plumber())
         .pipe(sass.sync({outputStyle: "expanded"}))
+        .pipe( postcss([ precss, autoprefixer ]) )
         .pipe(gulp.dest("src/css"))
         .pipe(browserSync.stream())
 });
