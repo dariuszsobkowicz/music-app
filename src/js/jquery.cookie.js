@@ -12,7 +12,7 @@
         const options = $.extend({}, $.fn.cookieAlert.defaultOptions, userOptions);
 
         function cookieContainer () {
-            return `<div class="alert alert-info fade show" role="alert" style="border-radius: 0; margin-bottom: 0">
+            return `<div class="alert alert-info fade show fixed-bottom" role="alert" style="border-radius: 0; margin-bottom: 0">
                         <div class=${ options.containerClass }>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span id="btn-cookie" aria-hidden="true">&times;</span>

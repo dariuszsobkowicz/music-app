@@ -32,7 +32,7 @@ h1 {
     width: 100%;
     margin: 0 auto;
     position: relative;
-    top: 50vh;
+    top: 60vh;
     z-index: 100;
 
 }
@@ -87,7 +87,7 @@ h1 {
 
 .single-album-container {
     position: relative;
-    top: 15vh;
+    top: 20vh;
 
     & figure {
         float: left;
@@ -111,7 +111,13 @@ h1 {
     & table th {
         border-bottom: none;
     }
-    & .play {
-        width: 100%;
-    }
+}
+
+// search
+
+.search-place {
+    border-color: #5cb85c;
+}
+.play {
+    width: 100%;
 }

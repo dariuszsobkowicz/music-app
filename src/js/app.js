@@ -12,7 +12,18 @@
             singleAlbum     = $(".single-album-container"),
             albumsContainer = $(".albums-container"),
             nav             = $(".nav"),
+            navContainer    = $(".nav-place"),
+            playBar         = $(".play"),
             btnSearch       = $("#search-form");
+
+        playBar.hide();
+        window.addEventListener("scroll", function (e) {
+            if (document.body.scrollTop > 150) {
+                navContainer.stop().slideUp(100);
+            } else {
+                navContainer.stop().slideDown(100);
+            }
+        });
 
         nav.on("click", ".sort-cards", function () {
             let that = $(this);
@@ -75,8 +86,8 @@
                 singleAlbum.empty();
                 singleAlbum.append(albumTemp);
                 $(".track-list").append(tracksList);
-                playBtn = $(".play-preview");
-                playBar = $(".play");
+                let playBtn = $(".play-preview");
+                //playBar = $(".play");
                 playPreview(playBtn, playBar);
             }, function (error) {
 
@@ -86,7 +97,8 @@
         function playPreview (btn, bar) {
             btn.on("click", function () {
                 const that = $(this);
-                bar[0].src = that.data("preview-url")
+                playBar.stop().fadeIn(500);
+                playBar[0].src = that.data("preview-url")
             });
         }
 
@@ -159,8 +171,7 @@
                         </tr>
                     </thead>
                     <tbody class="track-list"></tbody>
-                    </table>
-                    <audio class="play" autoplay="autoplay" controls="controls"></audio>`
+                    </table>`
         }
 
         /* --------------------
