@@ -11,7 +11,14 @@
             progress        = $("#preload-progress"),
             singleAlbum     = $(".single-album-container"),
             albumsContainer = $(".albums-container"),
+            nav             = $(".nav"),
             btnSearch       = $("#search-form");
+
+        nav.on("click", ".sort-cards", function () {
+            let that = $(this);
+            let query = that.text();
+            renderCards(query)
+        });
 
         btnSearch.on("submit", function (e) {
             e.preventDefault();
@@ -22,7 +29,7 @@
         albumsContainer.on("click", ".album-card", function () {
             let that = $(this);
             let album = that.data("data");
-            let toHistory = "/#" + album.id;
+            let toHistory = "/#/album/" + album.id;
             showAlbum(album.id, [album]);
             window.history.pushState(null, null, toHistory)
         });
@@ -30,10 +37,12 @@
         window.addEventListener("hashchange", function (e) {
             if (!window.location.hash) {
                 renderCards(query);
-            } else {
-                let album = window.location.hash.slice(1);
+            } else if (window.location.hash.indexOf("album") !== -1) {
+                let album = window.location.hash.slice(8);
                 showAlbum(album);
-
+            } else {
+                let name = window.location.hash.slice(2);
+                renderCards(name);
             }
         });
 
@@ -66,8 +75,18 @@
                 singleAlbum.empty();
                 singleAlbum.append(albumTemp);
                 $(".track-list").append(tracksList);
+                playBtn = $(".play-preview");
+                playBar = $(".play");
+                playPreview(playBtn, playBar);
             }, function (error) {
-                console.log(error)
+
+            });
+        }
+
+        function playPreview (btn, bar) {
+            btn.on("click", function () {
+                const that = $(this);
+                bar[0].src = that.data("preview-url")
             });
         }
 
@@ -119,6 +138,7 @@
             let duration = time.getMinutes() + "m:" + time.getSeconds() + "s";
             return `<tr>
                         <th scope="row">${track.track_number}</th>
+                        <td><button class="btn btn-success btn-sm play-preview" data-preview-url=${track.preview_url}>Play</button></td>
                         <td>${track.name}</td>
                         <td>${duration}</td>
                     </tr>`
@@ -133,12 +153,14 @@
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th></th>
                             <th>Track Name</th>
                             <th>Duration</th>
                         </tr>
                     </thead>
                     <tbody class="track-list"></tbody>
-                </table>`
+                    </table>
+                    <audio class="play" autoplay="autoplay" controls="controls"></audio>`
         }
 
         /* --------------------
