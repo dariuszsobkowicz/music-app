@@ -111,6 +111,10 @@ h1 {
     & table th {
         border-bottom: none;
     }
+    & table.playlist-table-list {
+        float: none;
+        margin: 0 auto;
+    }
 }
 
 // search

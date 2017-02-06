@@ -14,7 +14,9 @@
             nav             = $(".nav"),
             navContainer    = $(".nav-place"),
             playBar         = $(".play"),
-            btnSearch       = $("#search-form");
+            playlist        = $(".playlist"),
+            btnSearch       = $("#search-form"),
+            playlistTracks  = [];
 
         playBar.hide();
         window.addEventListener("scroll", function (e) {
@@ -28,7 +30,7 @@
         nav.on("click", ".sort-cards", function () {
             let that = $(this);
             let query = that.text();
-            renderCards(query)
+            renderCards(query, query)
         });
 
         btnSearch.on("submit", function (e) {
@@ -51,14 +53,84 @@
             } else if (window.location.hash.indexOf("album") !== -1) {
                 let album = window.location.hash.slice(8);
                 showAlbum(album);
-            } else {
+            } else if (window.location.hash.indexOf("playlist") !== -1) {
+                showPlaylist(playlistTracks)
+            } else if (window.location.hash.indexOf("jazz") !== -1 || window.location.hash.indexOf("rock") !== -1) {
                 let name = window.location.hash.slice(2);
-                renderCards(name);
+                let heading = name[0].toLocaleUpperCase() + name.slice(1);
+                renderCards(name, heading);
             }
         });
 
         renderCards(query);
 
+        /* --------------------
+         playlist tracks
+         -------------------- */
+
+        function collectIds (trackId) {
+            playlistTracks.push(trackId);
+            updatePlaylist(playlistTracks.length);
+        }
+
+        function updatePlaylist (num) {
+            let elem = playlist.find(":link");
+            let icon = playlist.find("i");
+            let regex = /\d+/g;
+            let title = elem.text();
+            let updateTitle = title.replace(regex, num);
+            elem.empty();
+            elem.append(icon);
+            elem.append(updateTitle);
+        }
+
+        function showPlaylist (tracks) {
+            let ids = tracks.join(",");
+            $.getJSON(`https://api.spotify.com/v1/tracks/?ids=${ids}`)
+                .then(function (response) {
+                    let trackList = response.tracks.map(function (elem) {
+                        return tracksListTemplate(elem)
+                    });
+                    let playListTemplate = $(playlistTemplate());
+                    playListTemplate.append(trackList);
+                    albumsContainer.empty();
+                    singleAlbum.empty();
+                    singleAlbum.append(playListTemplate);
+                    let playBtn = $(".play-preview");
+                    playPreview(playBtn, playBar);
+                    $(".track-add").parent("td").remove();
+
+                })
+        }
+
+        /* --------------------
+         playlist drag n drop n click methods
+         -------------------- */
+
+        playlist.on("dragover", function (e) {
+            let that = $(this);
+            e.preventDefault();
+            that.find("a").addClass("text-info");
+        });
+
+        playlist.on("drop", function (e) {
+            let that = $(this);
+            let trackId = e.originalEvent.dataTransfer.getData("application/music-id");
+            collectIds(trackId);
+            that.find("a").removeClass("text-info");
+        });
+
+        singleAlbum.on("dragstart", ".track-id", function (e) {
+            let that = $(this);
+            let trackId = that.data("album-id");
+            e.originalEvent.dataTransfer.setData("application/music-id", trackId);
+        });
+
+        singleAlbum.on("click", ".track-add", function (e) {
+            let that = $(this).parents(".track-id");
+            let trackId = that.data("album-id");
+            collectIds(trackId);
+        });
 
         /* --------------------
          album
@@ -87,7 +159,6 @@
                 singleAlbum.append(albumTemp);
                 $(".track-list").append(tracksList);
                 let playBtn = $(".play-preview");
-                //playBar = $(".play");
                 playPreview(playBtn, playBar);
             }, function (error) {
 
@@ -106,8 +177,9 @@
          cards
          -------------------- */
 
-        function renderCards (query) {
+        function renderCards (query, heading = "Listen music everywhere") {
             let url = `https://api.spotify.com/v1/search?q=${query}&type=album&market=GB`;
+            let h1 = $("<h1></h1>");
 
             $.getJSON(url).then(function (response) {
                 preloadImg(response)
@@ -117,7 +189,8 @@
                         });
                         container.empty();
                         singleAlbum.empty();
-                        $("<h1>Listen music everywhere</h1>").appendTo(container).hide().fadeIn(500);
+                        h1.empty();
+                        h1.text(heading).appendTo(container);
                         container.append(albumsList);
                         preloadReset();
                     }, function () {
@@ -148,9 +221,10 @@
         function tracksListTemplate (track) {
             let time = new Date(track.duration_ms);
             let duration = time.getMinutes() + "m:" + time.getSeconds() + "s";
-            return `<tr>
+            return `<tr class="track-id" draggable="true" data-album-id="${track.id}">
                         <th scope="row">${track.track_number}</th>
-                        <td><button class="btn btn-success btn-sm play-preview" data-preview-url=${track.preview_url}>Play</button></td>
+                        <td><button class="btn btn-success btn-sm play-preview" data-preview-url=${track.preview_url}><i class="fa fa-play-circle-o" aria-hidden="true"></i> Play</button></td>
+                        <td><i class="fa fa-plus-square track-add" aria-hidden="true"></i></td>
                         <td>${track.name}</td>
                         <td>${duration}</td>
                     </tr>`
@@ -162,6 +236,21 @@
                         <figcaption>${album.artists[0].name}</figcaption>
                     </figure>
                     <table class="table table-hover table-inverse">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th><i class="fa fa-hand-lizard-o text-info" aria-hidden="true"></i> drag</th>
+                            <th><i class="fa fa-hand-o-down text-info" aria-hidden="true"></i> add</th>
+                            <th>Track Name</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody class="track-list"></tbody>
+                    </table>`
+        }
+
+        function playlistTemplate () {
+            return `<table class="table table-hover table-inverse playlist-table-list">
                     <thead>
                         <tr>
                             <th>#</th>
