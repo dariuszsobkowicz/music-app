@@ -6,19 +6,17 @@
             message: "This site uses cookies to personalize content and ads to make our site easier for you to use."
         });
 
-        let query           = "batman",
-            container       = $("#main"),
-            progress        = $("#preload-progress"),
-            singleAlbum     = $(".single-album-container"),
-            albumsContainer = $(".albums-container"),
-            nav             = $(".nav"),
-            navContainer    = $(".nav-place"),
-            playBar         = $(".play"),
-            playlist        = $(".playlist"),
-            btnSearch       = $("#search-form"),
-            playlistTracks  = [];
+        let query          = "batman",
+            preloaderImg   = $("#preload-progress"),
+            singleAlbum    = $(".single-album"),
+            cardsList      = $(".cards-list"),
+            navContainer   = $(".nav-place"),
+            player         = $(".player"),
+            playlist       = $(".playlist"),
+            searchForm     = $("#search-form"),
+            playlistTracks = [];
 
-        playBar.hide();
+        player.hide();
         window.addEventListener("scroll", function (e) {
             if (document.body.scrollTop > 150) {
                 navContainer.stop().slideUp(100);
@@ -27,24 +25,16 @@
             }
         });
 
-        nav.on("click", ".sort-cards", function () {
-            let that = $(this);
-            let query = that.text();
-            renderCards(query, query)
-        });
-
-        btnSearch.on("submit", function (e) {
+        searchForm.on("submit", function (e) {
             e.preventDefault();
             query = $(this).find("input").val();
             renderCards(query);
         });
 
-        albumsContainer.on("click", ".album-card", function () {
+        cardsList.on("click", ".album-card", function () {
             let that = $(this);
             let album = that.data("data");
-            let toHistory = "/#/album/" + album.id;
-            showAlbum(album.id, [album]);
-            window.history.pushState(null, null, toHistory)
+            window.location.hash = "/album/" + album.id;
         });
 
         window.addEventListener("hashchange", function (e) {
@@ -52,6 +42,7 @@
                 renderCards(query);
             } else if (window.location.hash.indexOf("album") !== -1) {
                 let album = window.location.hash.slice(8);
+                console.log(album);
                 showAlbum(album);
             } else if (window.location.hash.indexOf("playlist") !== -1) {
                 showPlaylist(playlistTracks)
@@ -60,7 +51,7 @@
                 let heading = name[0].toLocaleUpperCase() + name.slice(1);
                 renderCards(name, heading);
             }
-        });
+        }, false);
 
         renderCards(query);
 
@@ -93,11 +84,11 @@
                     });
                     let playListTemplate = $(playlistTemplate());
                     playListTemplate.append(trackList);
-                    albumsContainer.empty();
+                    cardsList.empty();
                     singleAlbum.empty();
                     singleAlbum.append(playListTemplate);
                     let playBtn = $(".play-preview");
-                    playPreview(playBtn, playBar);
+                    playPreview(playBtn, player);
                     $(".track-add").parent("td").remove();
 
                 })
@@ -136,30 +127,25 @@
          album
          -------------------- */
 
-        function showAlbum (albumId, album) {
+        function showAlbum (albumId) {
             let urlTracks = `https://api.spotify.com/v1/albums/${albumId}/tracks?limit=8`;
             let urlAlbum = `https://api.spotify.com/v1/albums/${albumId}`;
 
             $.when(
                 $.getJSON(urlTracks),
-                (function () {
-                    if (!album) {
-                        return $.getJSON(urlAlbum)
-                    } else {
-                        return album
-                    }
-                })()
+                $.getJSON(urlAlbum)
             ).then(function (tracks, album) {
                 let albumTemp = albumTemplate(album[0]);
                 let tracksList = tracks[0].items.map(function (elem) {
+                    console.log(elem);
                     return tracksListTemplate(elem);
                 });
-                albumsContainer.empty();
+                cardsList.empty();
                 singleAlbum.empty();
                 singleAlbum.append(albumTemp);
                 $(".track-list").append(tracksList);
                 let playBtn = $(".play-preview");
-                playPreview(playBtn, playBar);
+                playPreview(playBtn, player);
             }, function (error) {
 
             });
@@ -167,9 +153,10 @@
 
         function playPreview (btn, bar) {
             btn.on("click", function () {
+                console.log(this);
                 const that = $(this);
-                playBar.stop().fadeIn(500);
-                playBar[0].src = that.data("preview-url")
+                player.stop().fadeIn(500);
+                player[0].src = that.data("preview-url")
             });
         }
 
@@ -187,11 +174,11 @@
                         const albumsList = response.albums.items.map(function (elem) {
                             return cardTemplate(elem)
                         });
-                        container.empty();
+                        cardsList.empty();
                         singleAlbum.empty();
                         h1.empty();
-                        h1.text(heading).appendTo(container);
-                        container.append(albumsList);
+                        h1.text(heading).appendTo(cardsList);
+                        cardsList.append(albumsList);
                         preloadReset();
                     }, function () {
                         // set method on error
@@ -211,14 +198,15 @@
             let albumName = album.name.slice(0, 28);
             let template = `<img class="album-img" src="${album.images[1].url}" alt="Sample album">
                             <div class="album-details">
-                            <h4 class="">${albumName}</h4>
-                            <p class="">${album.artists[0].name}</p>
+                                <h4 class="">${albumName}</h4>
+                                <p class="">${album.artists[0].name}</p>
                             </div>`;
             elem.append(template);
             return elem;
         }
 
         function tracksListTemplate (track) {
+            console.log(track);
             let time = new Date(track.duration_ms);
             let duration = time.getMinutes() + "m:" + time.getSeconds() + "s";
             return `<tr class="track-id" draggable="true" data-album-id="${track.id}">
@@ -269,24 +257,24 @@
 
         function preloadStart (counter, length) {
             let tl = new TimelineLite();
-            tl.to(progress, 0, {
+            tl.to(preloaderImg, 0, {
                 height:          "2px",
                 backgroundColor: "#ffd700",
                 opacity:         1
             });
-            tl.to(progress, .2, {
+            tl.to(preloaderImg, .2, {
                 width: (counter / length * 100) + "%",
             })
         }
 
         function preloadReset () {
             let tl = new TimelineLite();
-            tl.to(progress, 0, {
+            tl.to(preloaderImg, 0, {
                 height:  0,
                 opacity: 0,
                 delay:   .5
             });
-            tl.to(progress, 0, {
+            tl.to(preloaderImg, 0, {
                 width: "0%"
             })
         }

@@ -24,9 +24,9 @@ h1 {
     text-align: center;
 }
 
-// cards list
+// cards list view
 
-.albums-container {
+.cards-list {
     display: flex;
     flex-flow: row wrap;
     width: 100%;
@@ -85,7 +85,7 @@ h1 {
 
 // single album view
 
-.single-album-container {
+.single-album {
     position: relative;
     top: 20vh;
 
@@ -122,6 +122,6 @@ h1 {
 .search-place {
     border-color: #5cb85c;
 }
-.play {
+.player {
     width: 100%;
 }
