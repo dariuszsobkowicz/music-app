@@ -14,8 +14,9 @@
             player         = $(".player"),
             playlist       = $(".playlist"),
             searchForm     = $("#search-form"),
-            playlistTracks = [];
+            playlistTracks = JSON.parse(window.localStorage.getItem("playlist")) || [];
 
+        updatePlaylist(playlistTracks.length);
         player.hide();
         window.addEventListener("scroll", function (e) {
             if (document.body.scrollTop > 150) {
@@ -59,10 +60,10 @@
          -------------------- */
 
         function collectIds (trackId, elem) {
-            if (playlistTracks.indexOf(trackId) !== -1) {
-            } else {
+            if (playlistTracks.indexOf(trackId) === -1) {
                 playlistTracks.push(trackId);
-                elem.find(".track-add").css({color: "#5cb85c"})
+                elem.find(".track-add").css({color: "#5cb85c"});
+                window.localStorage.setItem("playlist", JSON.stringify(playlistTracks))
             }
             updatePlaylist(playlistTracks.length);
         }
@@ -119,6 +120,7 @@
             } else {
                 parent.remove();
             }
+            window.localStorage.setItem("playlist", JSON.stringify(playlistTracks))
         }
 
         /* --------------------
