@@ -42,7 +42,6 @@
                 renderCards(query);
             } else if (window.location.hash.indexOf("album") !== -1) {
                 let album = window.location.hash.slice(8);
-                console.log(album);
                 showAlbum(album);
             } else if (window.location.hash.indexOf("playlist") !== -1) {
                 showPlaylist(playlistTracks)
@@ -59,8 +58,12 @@
          playlist tracks
          -------------------- */
 
-        function collectIds (trackId) {
-            playlistTracks.push(trackId);
+        function collectIds (trackId, elem) {
+            if (playlistTracks.indexOf(trackId) !== -1) {
+            } else {
+                playlistTracks.push(trackId);
+                elem.find(".track-add").css({color: "#5cb85c"})
+            }
             updatePlaylist(playlistTracks.length);
         }
 
@@ -77,10 +80,12 @@
 
         function showPlaylist (tracks) {
             let ids = tracks.join(",");
+            let num = 0;
             $.getJSON(`https://api.spotify.com/v1/tracks/?ids=${ids}`)
                 .then(function (response) {
                     let trackList = response.tracks.map(function (elem) {
-                        return tracksListTemplate(elem)
+                        num++;
+                        return tracksListTemplate(elem, num)
                     });
                     let playListTemplate = $(playlistTemplate());
                     playListTemplate.append(trackList);
@@ -88,10 +93,32 @@
                     singleAlbum.empty();
                     singleAlbum.append(playListTemplate);
                     let playBtn = $(".play-preview");
+                    let removeIcon = $("<i class='fa fa-trash-o remove-playlist-track' aria-hidden='true'></i>");
+                    let cell = $("<td></td>");
                     playPreview(playBtn, player);
                     $(".track-add").parent("td").remove();
-
+                    removeIcon.bind("click", function () {
+                        removeTrack(this)
+                    });
+                    cell.append(removeIcon);
+                    $(".track-id").append(cell);
+                }, function (error) {
+                    // on error
                 })
+        }
+
+        function removeTrack (elem) {
+            let that = $(elem);
+            let parent = that.parent().parent();
+            let trackId = parent.data("album-id");
+            let index = playlistTracks.indexOf(trackId);
+            playlistTracks.splice(index, 1);
+            updatePlaylist(playlistTracks.length);
+            if (playlistTracks.length > 1) {
+                showPlaylist(playlistTracks)
+            } else {
+                parent.remove();
+            }
         }
 
         /* --------------------
@@ -120,7 +147,7 @@
         singleAlbum.on("click", ".track-add", function (e) {
             let that = $(this).parents(".track-id");
             let trackId = that.data("album-id");
-            collectIds(trackId);
+            collectIds(trackId, that);
         });
 
         /* --------------------
@@ -137,13 +164,14 @@
             ).then(function (tracks, album) {
                 let albumTemp = albumTemplate(album[0]);
                 let tracksList = tracks[0].items.map(function (elem) {
-                    console.log(elem);
                     return tracksListTemplate(elem);
                 });
                 cardsList.empty();
                 singleAlbum.empty();
                 singleAlbum.append(albumTemp);
-                $(".track-list").append(tracksList);
+                let list = $(".track-list");
+                list.append(tracksList);
+                checkAddedTraks(list);
                 let playBtn = $(".play-preview");
                 playPreview(playBtn, player);
             }, function (error) {
@@ -158,6 +186,19 @@
                 player.stop().fadeIn(500);
                 player[0].src = that.data("preview-url")
             });
+        }
+
+        function checkAddedTraks (tracks) {
+            let trs = tracks.find("tr");
+            trs.each(function (i, elem) {
+                let item = $(elem);
+                let addIcon = item.find(".track-add");
+                if (playlistTracks.indexOf(item.data("album-id")) !== -1) {
+                    addIcon.css({
+                        color: "#5cb85c"
+                    })
+                }
+            })
         }
 
         /* --------------------
@@ -205,12 +246,13 @@
             return elem;
         }
 
-        function tracksListTemplate (track) {
-            console.log(track);
+        function tracksListTemplate (track, playlist) {
+            let counter = playlist ? playlist : track.track_number;
+
             let time = new Date(track.duration_ms);
             let duration = time.getMinutes() + "m:" + time.getSeconds() + "s";
             return `<tr class="track-id" draggable="true" data-album-id="${track.id}">
-                        <th scope="row">${track.track_number}</th>
+                        <th scope="row">${counter}</th>
                         <td><button class="btn btn-success btn-sm play-preview" data-preview-url=${track.preview_url}><i class="fa fa-play-circle-o" aria-hidden="true"></i> Play</button></td>
                         <td><i class="fa fa-plus-square track-add" aria-hidden="true"></i></td>
                         <td>${track.name}</td>
@@ -245,6 +287,7 @@
                             <th></th>
                             <th>Track Name</th>
                             <th>Duration</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody class="track-list"></tbody>
