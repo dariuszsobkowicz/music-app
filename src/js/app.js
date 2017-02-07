@@ -10,7 +10,7 @@
             preloaderImg   = $("#preload-progress"),
             singleAlbum    = $(".single-album"),
             cardsList      = $(".cards-list"),
-            navContainer   = $(".nav-place"),
+            navContainer   = $(".nav-container"),
             player         = $(".player"),
             playlist       = $(".playlist"),
             searchForm     = $("#search-form"),
@@ -19,10 +19,10 @@
         updatePlaylist(playlistTracks.length);
         player.hide();
         window.addEventListener("scroll", function (e) {
-            if (document.body.scrollTop > 150) {
-                navContainer.stop().slideUp(100);
+            if (document.body.scrollTop > 50) {
+                navContainer.stop().fadeOut(5);
             } else {
-                navContainer.stop().slideDown(100);
+                navContainer.stop().fadeIn(5);
             }
         });
 
@@ -136,7 +136,8 @@
         playlist.on("drop", function (e) {
             let that = $(this);
             let trackId = e.originalEvent.dataTransfer.getData("application/music-id");
-            collectIds(trackId);
+            let elem = singleAlbum.find("tr[data-album-id='" + trackId + "']");
+            collectIds(trackId, elem);
             that.find("a").removeClass("text-info");
         });
 
@@ -173,7 +174,7 @@
                 singleAlbum.append(albumTemp);
                 let list = $(".track-list");
                 list.append(tracksList);
-                checkAddedTraks(list);
+                checkAddedTracks(list);
                 let playBtn = $(".play-preview");
                 playPreview(playBtn, player);
             }, function (error) {
@@ -190,7 +191,7 @@
             });
         }
 
-        function checkAddedTraks (tracks) {
+        function checkAddedTracks (tracks) {
             let trs = tracks.find("tr");
             trs.each(function (i, elem) {
                 let item = $(elem);
@@ -214,18 +215,16 @@
             $.getJSON(url).then(function (response) {
                 preloadImg(response)
                     .then(function () {
+                        h1.empty();
+                        cardsList.empty();
+                        singleAlbum.empty();
                         const albumsList = response.albums.items.map(function (elem) {
                             return cardTemplate(elem)
                         });
-                        cardsList.empty();
-                        singleAlbum.empty();
-                        h1.empty();
                         h1.text(heading).appendTo(cardsList);
                         cardsList.append(albumsList);
                         preloadReset();
-                    }, function () {
-                        // set method on error
-                    }, function (counter, length) {
+                    }, null, function (counter, length) {
                         preloadStart(counter, length);
                     })
             });
@@ -239,7 +238,7 @@
             let elem = $("<div class='album-card'></div>");
             elem.data("data", album);
             let albumName = album.name.slice(0, 28);
-            let template = `<img class="album-img" src="${album.images[1].url}" alt="Sample album">
+            let template = `<img class="album-img" src="${album.images[0].url}" alt="Sample album">
                             <div class="album-details">
                                 <h4 class="">${albumName}</h4>
                                 <p class="">${album.artists[0].name}</p>
@@ -263,22 +262,26 @@
         }
 
         function albumTemplate (album) {
-            return `<figure>
+            return `<div>
+                    <figure>
                         <img src=${album.images[0].url} alt="album img" class="img-fluid">
                         <figcaption>${album.artists[0].name}</figcaption>
                     </figure>
-                    <table class="table table-hover table-inverse">
+                    </div>
+                    <div>
+                    <table class="table table-hover table-inverse album-temp">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th><i class="fa fa-hand-lizard-o text-info" aria-hidden="true"></i> drag</th>
+                            <th><span class="hidden-mobile"><i class="fa fa-hand-lizard-o text-info" aria-hidden="true"></i> drag</span></th>
                             <th><i class="fa fa-hand-o-down text-info" aria-hidden="true"></i> add</th>
                             <th>Track Name</th>
                             <th>Duration</th>
                         </tr>
                     </thead>
                     <tbody class="track-list"></tbody>
-                    </table>`
+                    </table>
+                    </div>`
         }
 
         function playlistTemplate () {

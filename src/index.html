@@ -12,37 +12,42 @@
 </head>
 <body>
 
-<div class="container fixed-top">
+<div class="container-fluid fixed-top">
     <div class="row">
-        <div class="col-sm-12">
-            <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse nav-place">
-                <a class="navbar-brand" href="#">Music App</a>
-                <ul class="nav">
-                    <li class="nav-item sort-cards"><a class="nav-link" href="#/jazz">Jazz</a></li>
-                    <li class="nav-item sort-cards"><a class="nav-link" href="#/rock">Rock</a></li>
-                    <li class="nav-item playlist"><a class="nav-link" href="#/playlist"><i class="fa fa-list-ol" aria-hidden="true"></i> Playlist 0</a></li>
+        <div class="col-sm-12 nav-container">
+            <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="nav mr-auto">
+                    <li><a class="navbar-brand" href="#">Music App</a></li>
+                    <li class="nav-item sort-cards"><a class="nav-link text-success" href="#/jazz">Jazz</a></li>
+                    <li class="nav-item sort-cards"><a class="nav-link text-success" href="#/rock">Rock</a></li>
+                    <li class="nav-item playlist"><a class="nav-link text-success" href="#/playlist"><i class="fa fa-list-ol" aria-hidden="true"></i> Playlist 0</a></li>
                 </ul>
-                <form id="search-form" class="ml-auto mr-0">
+                </div>
+                <form id="search-form" class="navbar-text">
                     <div class="input-group">
-                        <input class="form-control form-control-sm search-place" type="text" name="search" placeholder="Search for...">
+                        <input class="form-control form-control-sm search-border" type="text" name="search" placeholder="Search for...">
                         <span class="input-group-btn">
-                            <button class="btn btn-primary btn-sm search-place" type="submit">Go</button>
+                            <button class="btn btn-success btn-sm button-border" type="submit">Go</button>
                         </span>
                     </div>
                 </form>
-            </nav>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-12">
-        <audio class="player" autoplay="autoplay" controls="controls"></audio>
+        </nav>
         </div>
     </div>
 </div>
 
 <div class="cards-list"></div>
-<div class="container single-album"></div>
+
+<div class="container-fluid single-album"></div>
+
+<audio class="player" autoplay="autoplay" controls="controls"></audio>
+
 <div id="preload-progress" class="fixed-bottom"></div>
+
 
 <script src="js/jquery.js"></script>
 <script src="js/tether.js"></script>
