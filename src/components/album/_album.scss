@@ -1,0 +1,69 @@
+.remove-playlist-track:hover {
+  color: red;
+}
+
+.single-album {
+  position: relative;
+  top: 150px;
+  z-index: 200;
+  font-size: 14px;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: space-between;
+
+  & div {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    margin: 0 16px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, .2);
+  }
+  & div:first-child {
+    width: 35%;
+  }
+  & div:last-child {
+    width: 60%;
+  }
+
+  & figure {
+    position: relative;
+    text-align: center;
+    margin: 0;
+    display: flex;
+    flex-flow: column wrap;
+    & img {
+      flex: 1 0 0;
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+
+  & figcaption {
+    font-size: 20px;
+    color: rgba(255, 255, 255, .9);
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    background: rgba(0, 0, 0, .9);
+    width: 100%;
+    padding: 25px;
+    left: 0;
+  }
+  & table {
+    margin: 0;
+    color: rgba(255, 255, 255, .8);
+  }
+  & table th, table td {
+    border-color: #5cb85c;
+  }
+  & table th {
+    border-bottom: none;
+  }
+}
+
+table.playlist-table-list {
+  margin: 0 auto;
+  width: 75%;
+}

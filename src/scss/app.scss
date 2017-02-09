@@ -1,4 +1,10 @@
 @import "bootstrap";
+@import "../../node_modules/font-awesome/scss/font-awesome.scss";
+
+@import "../components/album/album";
+@import "../components/cards-list/cards-list";
+@import "../components/playlist/playlist";
+@import "../components/preloader/preloader";
 
 // background
 
@@ -48,152 +54,10 @@ h1 {
     text-align: center;
 }
 
-// cards list view
-
-.cards-list {
-    display: flex;
-    flex-flow: row wrap;
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
-    position: relative;
-    top: 50%;
-    z-index: 100;
-
-}
-.album-card {
-    width: 25%;
-    position: relative;
-    transition: .1s all ease-out;
-    transform: scale(1);
-    overflow: hidden;
-}
-.album-card:before {
-    content: '';
-    display: block;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, .6);
-    z-index: 400;
-}
-.album-card:hover {
-    transform: scale(1.05);
-    z-index: 100;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 1);
-}
-.album-card:hover .album-details{
-    bottom: 0;
-}
-.album-details {
-    position: absolute;
-    bottom: -35%;
-    color: rgba(255, 255, 255, .9);
-    z-index: 500;
-    display: block;
-    width: 100%;
-    height: 35%;
-    background-color: rgba(0, 0, 0, .9);
-    padding: 10%;
-
-}
-.album-details h4 {
-    font-size: 16px;
-}
-.album-details p {
-    font-size: 12px;
-}
-.album-img {
-    width: 100%;
-    position: relative;
-}
-
-// single album view
-
-.remove-playlist-track:hover {
-    color: red;
-}
-
-.single-album {
-    position: relative;
-    top: 150px;
-    z-index: 200;
-    font-size: 14px;
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: stretch;
-    justify-content: space-between;
-
-    & div {
-        flex: 0 0 auto;
-        display: flex;
-        justify-content: center;
-        margin: 0 16px;
-        overflow: hidden;
-        background: rgba(0, 0, 0, .2);
-    }
-    & div:first-child {
-        width: 35%;
-    }
-    & div:last-child {
-        width: 60%;
-    }
-
-    & figure {
-        position: relative;
-        text-align: center;
-        margin: 0;
-        display: flex;
-        flex-flow: column wrap;
-        & img {
-            flex: 1 0 0;
-            width: 100%;
-            object-fit: cover;
-        }
-    }
-
-    & figcaption {
-        font-size: 20px;
-        color: rgba(255, 255, 255, .9);
-        text-align: center;
-        position: absolute;
-        bottom: 0;
-        background: rgba(0, 0, 0, .9);
-        width: 100%;
-        padding: 25px;
-        left: 0;
-    }
-    & table {
-        margin: 0;
-        color: rgba(255, 255, 255, .8);
-    }
-    & table th, table td {
-        border-color: #5cb85c;
-    }
-    & table th {
-        border-bottom: none;
-    }
-}
-
-table.playlist-table-list {
-    margin: 0 auto;
-    width: 75%;
-}
-
 // search
 
 .search-border {
     border-color: #5cb85c ;
-}
-
-// player
-
-.player {
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: 3000;
 }
 
 @media screen and (max-width: 991px) {

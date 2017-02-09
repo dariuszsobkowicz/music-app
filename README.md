@@ -1,4 +1,4 @@
-# music app - in progress
+# music app
 
 ## Landing
 <p align="center">
